@@ -1,4 +1,4 @@
-package com.picpal.framework.sample.controller;
+package com.picpal.framework.application.controller;
 
 import com.picpal.framework.sample.service.DevOpsLinkerService;
 import com.picpal.framework.sample.vo.GitlabEventVO;
@@ -19,10 +19,6 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class DevOpsLinkerController {
-    private static final String API_TOKEN = "glpat-tYyyW1G8L2y9xcRsusrk";
-    private static final String GITLAB_API_URL = "https://gitlab.com/api/v4/users/";
-
-
     private JavaMailSender mailSender;
 
     public DevOpsLinkerController(JavaMailSender javaMailSender){
@@ -51,9 +47,6 @@ public class DevOpsLinkerController {
                 break;
             case "note":
                 handleCommentEvent(event);
-                break;
-            case "pipeline":
-                handlePipelineEvent(event);
                 break;
             default:
                 // Handle other events
@@ -107,23 +100,6 @@ public class DevOpsLinkerController {
         String subject = "New Comment by " + userName;
         String text = "Comment by: " + userName + "\n" + event.getObjectAttributes().getNote();
         sendEmailNotification(subject, text, email);
-    }
-
-    /**
-     * 파이프라인 이벤트를 처리하는 메서드입니다.
-     * 파이프라인 상태가 'merge'일 경우 사용자에게 이메일 알림을 보냅니다.
-     *
-     * @param event GitLab 이벤트 객체
-     */
-    private void handlePipelineEvent(GitlabEventVO event) {
-        if ("merge".equals(event.getObjectAttributes().getStatus())) {
-            String userName = event.getUser().getName();
-            String email = event.getUser().getEmail();
-
-            String subject = "Merge Completed by " + userName;
-            String text = "Merge request completed by: " + userName;
-            sendEmailNotification(subject, text, email);
-        }
     }
 
     /**
