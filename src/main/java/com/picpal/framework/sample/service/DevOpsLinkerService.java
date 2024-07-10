@@ -1,5 +1,5 @@
 package com.picpal.framework.sample.service;
 
-public interface SampleService {
+public interface DevOpsLinkerService {
     public void redExcelFile() throws Exception ;
 }

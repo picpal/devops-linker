@@ -1,4 +1,4 @@
-<mapper namespace="com.picpal.framework.sample.mapper.SampleMapper">
+<mapper namespace="com.picpal.framework.sample.mapper.DevOpsMapper">
     <!-- ####### user insert   -->
     <insert id="insertUserRecord">
         insert into SAMPLE_ENTITY(

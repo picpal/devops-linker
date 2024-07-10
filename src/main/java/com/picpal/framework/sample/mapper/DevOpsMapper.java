@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.Map;
 
 @Mapper
-public interface SampleMapper {
+public interface DevOpsMapper {
     void insertUserRecord(Map<String, Object> record);
     void insertExcelCells(Map<String, Object> record);
 }

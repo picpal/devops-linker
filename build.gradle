@@ -94,8 +94,11 @@ dependencies {
 	implementation group: 'org.jsoup', name: 'jsoup', version: '1.7.2'
 
 	// 외부 jar 등록 테스트
-	implementation files('libs/util-common.jar')
+	//implementation files('libs/util-common.jar')
 
+	// mail 발송
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 }
 
@@ -113,82 +116,77 @@ tasks {
 		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
 	}
 }
+//
+//tasks.withType(GenerateSwaggerUI){
+//	dependsOn 'openapi3'
+//
+//	delete file('src/main/resources/static/docs')
+//	copy{
+//		from 'build/resources/main/static/docs'
+//		into 'src/main/resources/static/docs/'
+//	}
+//}
 
-tasks.withType(GenerateSwaggerUI){
-	dependsOn 'openapi3'
-
-	delete file('src/main/resources/static/docs')
-	copy{
-		from 'build/resources/main/static/docs'
-		into 'src/main/resources/static/docs/'
-	}
-}
-
-
-task copyDocument(type: Copy){
-	dependsOn asciidoctor
-	from file('build/docs/asciidoc')
-	into file('src/main/resources/static/docs')
-}
+//
+//task copyDocument(type: Copy){
+//	dependsOn asciidoctor
+//	from file('build/docs/asciidoc')
+//	into file('src/main/resources/static/docs')
+//}
 
 test {
 	useJUnitPlatform()
 }
 
-bootJar{
-	dependsOn('openapi3')
-}
-
-openapi3{
-	server = "http://localhost:8080"
-	title = "Boilerplate DOCS"
-	description = "Boilerplate REST API TEST DOCS"
-	version = "0.0.1"
-	outputFileNamePrefix = 'boilerplate-1.0.0'
-	format = 'json'
-	outputDirectory = 'build/resources/main/static/docs'
-}
-
-asciidoctor {
-	configurations 'asciidoctorExt'
-	baseDirFollowsSourceFile()
-	inputs.dir snippetsDir
-	dependsOn test
-}
-
-asciidoctor.doFirst{
-	delete file('src/main/resources/static/docs')
-}
-
-
-
-
+//bootJar{
+//	dependsOn('openapi3')
+//}
+//
+//openapi3{
+//	server = "http://localhost:8080"
+//	title = "Boilerplate DOCS"
+//	description = "Boilerplate REST API TEST DOCS"
+//	version = "0.0.1"
+//	outputFileNamePrefix = 'boilerplate-1.0.0'
+//	format = 'json'
+//	outputDirectory = 'build/resources/main/static/docs'
+//}
+//
+//asciidoctor {
+//	configurations 'asciidoctorExt'
+//	baseDirFollowsSourceFile()
+//	inputs.dir snippetsDir
+//	dependsOn test
+//}
+//
+//asciidoctor.doFirst{
+//	delete file('src/main/resources/static/docs')
+//}
 
 // 패키지 jar로 build
+//sourceSets {
+//	// 'util'이라는 이름의 새로운 소스 세트 생성
+//	util {
+//		java {
+//			srcDir 'src/main/java'
+//			include 'com/picpal/framework/common/utils/html/**'
+//		}
+//	}
+//}
 
-sourceSets {
-	// 'util'이라는 이름의 새로운 소스 세트 생성
-	util {
-		java {
-			srcDir 'src/main/java'
-			include 'com/picpal/framework/common/utils/html/**'
-		}
-	}
-}
-
-
-task utilJar(type: Jar) {
-	// 생성될 JAR 파일의 이름 지정
-	archiveFileName = 'util-common.jar'
-	// 'util' 소스 세트의 컴파일된 클래스를 포함
-	from sourceSets.util.output
-	// JAR 메타데이터 구성 (필요한 경우)
-	// manifest {
-	//     attributes(
-	//         'Implementation-Title': 'Utility Common Library',
-	//         'Implementation-Version': version
-	//     )
-	// }
-}
+//
+//task utilJar(type: Jar) {
+//	// 생성될 JAR 파일의 이름 지정
+//	archiveFileName = 'util-common.jar'
+//	// 'util' 소스 세트의 컴파일된 클래스를 포함
+//	from sourceSets.util.output
+//	// JAR 메타데이터 구성 (필요한 경우)
+//	// manifest {
+//	//     attributes(
+//	//         'Implementation-Title': 'Utility Common Library',
+//	//         'Implementation-Version': version
+//	//     )
+//	// }
+//}
 
 

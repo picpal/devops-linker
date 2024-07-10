@@ -26,7 +26,7 @@ jasypt:
 # ************ HTTP/HTTPS ***********
 ########################################################
 server:
-  port: 8080
+  port: 8085
   # kill -9 로 실행시 즉시 종료
   # kill -15 명령어가 실행 된다면 Spring의 SpringApplicationShutdownHook 이라는 객체를 통해 Spring을 종료
   # doShutdown 메서드에서 connector들을 닫음으로써 새로운 요청들을 받지 않음.

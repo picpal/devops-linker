@@ -26,11 +26,11 @@ public class WebSecurityConfiguration  {
          * H2 Database console 사용을 위해 사용된 옵션
          * H2 Database 사용을 하지 않는 경우 반드시 제거.
          #########################################*/
-        http.headers(headers -> headers
-            .frameOptions(frameOptions -> frameOptions
-                    .sameOrigin()
-            )
-        );
+//        http.headers(headers -> headers
+//            .frameOptions(frameOptions -> frameOptions
+//                    .sameOrigin()
+//            )
+//        );
 
         http
 
@@ -42,15 +42,15 @@ public class WebSecurityConfiguration  {
                     sessionManagementConfigure -> sessionManagementConfigure
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             ) // 세션 유지X ( rest API는 stateless )
-            .authorizeHttpRequests(
-                    request -> request
-                            .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-//                            .requestMatchers(WHITE_LIST).permitAll() // 인증 없이 접근 가능한 endpoint
-//                            .requestMatchers("/v1/..").hasRole("admin") // admin 권한만 접근 가능한 endpoint
-//                            .requestMatchers("/v1/..").hasRole("user") // user 권한만 접근 가능한 endpoint
-                            .anyRequest()
-                            .authenticated()
-            )
+//            .authorizeHttpRequests(
+//                    request -> request
+//                            .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+////                            .requestMatchers(WHITE_LIST).permitAll() // 인증 없이 접근 가능한 endpoint
+////                            .requestMatchers("/v1/..").hasRole("admin") // admin 권한만 접근 가능한 endpoint
+////                            .requestMatchers("/v1/..").hasRole("user") // user 권한만 접근 가능한 endpoint
+////                            .anyRequest()
+////                            .authenticated()
+//            )
             .httpBasic(Customizer.withDefaults());
 
         return http.build();
