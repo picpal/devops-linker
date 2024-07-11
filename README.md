@@ -18,3 +18,7 @@
 ngrok http 8080
 ```
 
+
+## Jasypt 
+- add vmOption으로 Application 시동 조건에 추가
+- nu

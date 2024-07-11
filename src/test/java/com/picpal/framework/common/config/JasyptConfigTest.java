@@ -11,15 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class JasyptConfigTest {
     @Test
     void stringEncryptor() {
-        String username = "admin";
-        String password = "admin123";
+        String username = "000";
+        String password = "000";
 
         log.info("####### jasypt ENC username : {} ",jasyptEncoding(username));
         log.info("####### jasypt ENC password : {} ",jasyptEncoding(password));
     }
 
     public String jasyptEncoding(String value) {
-        String key = "00001111"; // 암호화 키
+        String key = "000"; // 암호화 키
         StandardPBEStringEncryptor pbeEnc = new StandardPBEStringEncryptor();
         pbeEnc.setAlgorithm("PBEWITHHMACSHA512ANDAES_256");
         pbeEnc.setPassword(key);

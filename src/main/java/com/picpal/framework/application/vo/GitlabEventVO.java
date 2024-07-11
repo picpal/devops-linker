@@ -1,4 +1,4 @@
-package com.picpal.framework.sample.vo;
+package com.picpal.framework.application.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 

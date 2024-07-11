@@ -7,6 +7,19 @@ spring:
     timeout-per-shutdown-phase: 5s # 사실상 5초내에 로직이 처리 안되는 경우는 통신에 대한 응답 지연. 서비스 성격에 따라 적당한 시간 선정
 
 
+###########################################################
+# ******************** email properties *************************
+###########################################################
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ENC(MwlzN2edUrDusu9+28+EXb89eBqNIkxn+EGaqmL4JAHp5vUVtH49OSlA8q27jfoH)
+    password: ENC(K39oBJaTUZ6P3XLs/3+a9JXDEX3IjWseTsTd/BkgKOAATeOWXgqtm3Fqrh6lpESb)
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: false
+      mail.smtp.ssl.enable: true
+
 
 ########################################################
 # ************ MyBatis ***********
@@ -26,7 +39,7 @@ jasypt:
 # ************ HTTP/HTTPS ***********
 ########################################################
 server:
-  port: 8085
+  port: 8083
   # kill -9 로 실행시 즉시 종료
   # kill -15 명령어가 실행 된다면 Spring의 SpringApplicationShutdownHook 이라는 객체를 통해 Spring을 종료
   # doShutdown 메서드에서 connector들을 닫음으로써 새로운 요청들을 받지 않음.
@@ -65,9 +78,5 @@ management:
           - "health"
     server:
 
-springdoc:
-  default-consumes-media-type: application/json;charset=UTF-8
-  default-produces-media-type: application/json;charset=UTF-8
-  swagger-ui:
-    url: /docs/open-api-3.0.1.json
-    path: /docs/swagger
+
+

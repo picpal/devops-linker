@@ -12,11 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableEncryptableProperties
 public class JasyptConfig {
-    private String key = System.getProperty("jasypt.enc.pre") + System.getProperty("jasypt.enc.post");
+    private String key = System.getProperty("jasypt.enc.key");
 
     @Bean("jasyptEncryptorAES")
     public StringEncryptor stringEncryptor(){
-
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         config.setPassword(key); //암호화할 때 사용하는 키
