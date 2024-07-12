@@ -1,13 +1,15 @@
 package com.picpal.framework.application.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.picpal.framework.application.service.GitlabService;
-import com.picpal.framework.application.vo.GitlabEventVO;
 import com.picpal.framework.common.utils.EmailUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -22,21 +24,29 @@ public class GitlabServiceImpl implements GitlabService {
      * @param event GitLab 이벤트 객체
      */
     @Override
-    public void gitlabEventRouter(GitlabEventVO event)  {
-        switch (event.getObjectKind()) {
-            case "merge_request":
-                handleMergeRequestEvent(event);
-                break;
-            case "note":
-                handleCommentEvent(event);
-                break;
-            case "push":
-                emailUtil.sendEmailNotification("Webhooks test","hello","picpal@kakao.com");
-                // push 알림 여부 미정...
-                break;
-            default:
-                // Handle other events
-                break;
+    public void gitlabEventRouter(String event)  {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(event);
+
+            printJsonNode(rootNode, "");
+
+            Map<String, Object> nestedMap = jsonNodeToMap(rootNode);
+            log.info("Flattened Map: " + nestedMap);
+
+            // Example of accessing specific keys
+            String objectKind = (String) nestedMap.get("object_kind");
+
+            switch (objectKind) {
+                case "merge_request" -> handleMergeRequestEvent(nestedMap);
+                case "note" -> handleCommentEvent(nestedMap);
+                case "push" -> emailUtil.sendEmailNotification("Webhooks test", "hello", "picpal@kakao.com");  // push 알림 여부 미정...
+
+                default -> {
+                }
+            }
+        } catch (IOException e) {
+            log.error("Error parsing JSON", e);
         }
     }
 
@@ -46,13 +56,28 @@ public class GitlabServiceImpl implements GitlabService {
      *
      * @param event GitLab 이벤트 객체
      */
-    public void handleMergeRequestEvent(GitlabEventVO event) {
+    public void handleMergeRequestEvent(Map<String, Object> event) {
         log.info("##### handleMergeRequestEvent START");
 
-        String userName = event.getUser().getName();
+        Map<String, Object> objectAttributes = (Map<String, Object>) event.get("object_attributes");
+        String action = (String) objectAttributes.get("action");
 
+        log.info("##### action : {}" , action);
+        switch (action) {
+            case "open" -> {
+            }
+//            case "update" -> {}
+//            case "approved" -> {}
+            case "merge" -> {
+            }
+//            case "close" -> {}
+//            case "reopen" -> {}
+
+            default -> {
+            }
+        }
         // ##### 이벤트 발생 상황 ( 구분 가능여부 확인 )
-        // merge 요청할 때
+        // merge 생성될 때
         // merge 승인할 때
         // merge 닫을 때
         // merge 할 때
@@ -62,8 +87,6 @@ public class GitlabServiceImpl implements GitlabService {
         //   - reviewer가 다수인 경우 : reviewer 모두 발송
         //   - 3분 내로 재 수정시 발송 : 단순 수정 가능성이 있으니 발송 보류..
 
-
-        Map<String,String> mergeEventParams = parseMergeEventParams(event);
 
         /*
         * 필요 데이터
@@ -76,25 +99,15 @@ public class GitlabServiceImpl implements GitlabService {
         *
         * */
 
-        if (event.getAssignees() == null || event.getAssignees().isEmpty()) {
-            log.info("##### No assignees found for merge request created by: {}", userName);
-            return;
-        }
-
-        log.info("##### userName : {}", userName);
-        for (GitlabEventVO.Assignee assignee : event.getAssignees()) {
-            String reviewerEmail = assignee.getEmail();
-            String reviewerName = assignee.getName();
-
-            String subject = "New Merge Request Review for " + reviewerName;
-            String text = "Dear " + reviewerName + ",\n\n"
-                    + "A new merge request has been assigned to you by " + userName + ".\n"
-                    + "Please review it at your earliest convenience.";
-
-
-            log.info("reviewerEmail :  {} , reviewerName : {} , subject : {}", reviewerEmail, reviewerName, subject);
-            emailUtil.sendEmailNotification(subject, text, reviewerEmail);
-        }
+//        if (event.getAssignees() == null || event.getAssignees().isEmpty()) {
+//            log.info("##### No assignees found for merge request created by: {}", userName);
+//            return;
+//        }
+//
+//        log.info("##### userName : {}", userName);
+//        for (GitlabEventVO.Assignee assignee : event.getAssignees()) {
+////            emailUtil.sendEmailNotification(subject, text, reviewerEmail);
+//        }
     }
 
     /**
@@ -103,25 +116,76 @@ public class GitlabServiceImpl implements GitlabService {
      *
      * @param event GitLab 이벤트 객체
      */
-    public void handleCommentEvent(GitlabEventVO event) {
+    public void handleCommentEvent(Map<String, Object> event) {
         log.info("##### handleCommentEvent START");
+//
+//        String userName = event.getUser().getName();
+//        String email = event.getUser().getEmail();
+//
+//        String subject = "New Comment by " + userName;
+////        String text = "Comment by: " + userName + "\n" + event.getObjectAttributes().getNote();
+////        emailUtil.sendEmailNotification(subject, text, email);
+    }
 
-        String userName = event.getUser().getName();
-        String email = event.getUser().getEmail();
+    private Map<String, Object> jsonNodeToMap(JsonNode node) {
+        Map<String, Object> result = new HashMap<>();
+        convertJsonNodeToMap(node, result);
+        return result;
+    }
 
-        String subject = "New Comment by " + userName;
-        String text = "Comment by: " + userName + "\n" + event.getObjectAttributes().getNote();
-        emailUtil.sendEmailNotification(subject, text, email);
+    private void convertJsonNodeToMap(JsonNode node, Map<String, Object> map) {
+        if (node.isObject()) {
+            Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                JsonNode value = field.getValue();
+                if (value.isObject()) {
+                    Map<String, Object> nestedMap = new HashMap<>();
+                    convertJsonNodeToMap(value, nestedMap);
+                    map.put(field.getKey(), nestedMap);
+                } else if (value.isArray()) {
+                    List<Object> nestedList = new ArrayList<>();
+                    convertJsonNodeToList(value, nestedList);
+                    map.put(field.getKey(), nestedList);
+                } else {
+                    map.put(field.getKey(), value.asText());
+                }
+            }
+        }
+    }
+
+    private void convertJsonNodeToList(JsonNode node, List<Object> list) {
+        for (JsonNode arrayItem : node) {
+            if (arrayItem.isObject()) {
+                Map<String, Object> nestedMap = new HashMap<>();
+                convertJsonNodeToMap(arrayItem, nestedMap);
+                list.add(nestedMap);
+            } else if (arrayItem.isArray()) {
+                List<Object> nestedList = new ArrayList<>();
+                convertJsonNodeToList(arrayItem, nestedList);
+                list.add(nestedList);
+            } else {
+                list.add(arrayItem.asText());
+            }
+        }
     }
 
 
-    /**
-     * Merge Request Event에 발생된 Event객체에 대한 정보를 Map 데이터 형태로 파싱합니다
-     *
-     * @param event GitLab 이벤트 객체
-     */
-    private Map<String,String> parseMergeEventParams(GitlabEventVO event){
-
-        return null;
+    private void printJsonNode(JsonNode node, String indent) {
+        if (node.isObject()) {
+            Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                log.info(indent + field.getKey() + " : ");
+                printJsonNode(field.getValue(), indent + "  ");
+            }
+        } else if (node.isArray()) {
+            for (JsonNode arrayItem : node) {
+                printJsonNode(arrayItem, indent + "  ");
+            }
+        } else {
+            log.info(indent + node.asText());
+        }
     }
+
 }

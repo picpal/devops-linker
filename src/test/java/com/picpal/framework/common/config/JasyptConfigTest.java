@@ -11,11 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class JasyptConfigTest {
     @Test
     void stringEncryptor() {
-        String username = "000";
-        String password = "000";
+//        String username = "000";
+//        String password = "000";
 
-        log.info("####### jasypt ENC username : {} ",jasyptEncoding(username));
-        log.info("####### jasypt ENC password : {} ",jasyptEncoding(password));
+        String enckey = "dmVyeV92ZXJ5X2ltcG9ydGFudF9rZXk=";
+
+//        log.info("####### jasypt ENC username : {} ",jasyptEncoding(username));
+//        log.info("####### jasypt ENC password : {} ",jasyptEncoding(password));
+        log.info("####### jasypt ENC password : {} ",jasyptEncoding(enckey));
     }
 
     public String jasyptEncoding(String value) {
