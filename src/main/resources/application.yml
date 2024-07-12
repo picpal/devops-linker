@@ -78,5 +78,9 @@ management:
           - "health"
     server:
 
-
+########################################################
+# ************ api key ***********
+########################################################
+api:
+  key: ENC(bj8zRk/KgBbmeeBfLhGyoLOyBC/9R7YN9G+Hh2OgEF7MMsdwV2PW+JSLQBhiSpeRk4AmF5JQ/iekMSc43ISC4mzpHQpTL87w8oQlqo32AG4=)
 
