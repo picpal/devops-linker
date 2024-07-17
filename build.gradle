@@ -1,19 +1,8 @@
-buildscript{
-	ext {
-		restdocsApiSpecVersion = '0.17.1'
-		snippetsDir = file('build/generated-snippets')
-	}
-}
-
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.2'
 	id 'io.spring.dependency-management' version '1.1.4'
 
-	//restdocs + swagger
-	id 'org.asciidoctor.jvm.convert' version '3.3.1'
-	id 'com.epages.restdocs-api-spec' version "${restdocsApiSpecVersion}"
-	id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com.picpal'
@@ -24,8 +13,6 @@ java {
 }
 
 configurations {
-	asciidoctorExt
-
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -37,51 +24,31 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-logging'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-test'
 	implementation 'org.springframework.session:spring-session-core'
-	implementation 'org.springframework.data:spring-data-commons'
 
-	compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
 
-	// Mybatis
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
-
-	// Apache POI for Excel handling
-	implementation 'org.apache.poi:poi:5.2.2'
-	implementation 'org.apache.poi:poi-ooxml:5.2.2'
-
-	// actuator
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
 
 	// lombok
-	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// json
 	implementation 'com.googlecode.json-simple:json-simple:1.1'
-
-	// rest docs
-	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
-	// swagger UI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-	testImplementation 'com.epages:restdocs-api-spec-mockmvc:' + restdocsApiSpecVersion
-	testImplementation 'com.squareup.okhttp3:mockwebserver'
 
 	// Quartz
 	implementation 'org.quartz-scheduler:quartz:2.3.2'
@@ -91,10 +58,7 @@ dependencies {
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
 	// jsoup
-	implementation group: 'org.jsoup', name: 'jsoup', version: '1.7.2'
-
-	// 외부 jar 등록 테스트
-	//implementation files('libs/util-common.jar')
+	implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 
 	// mail 발송
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -116,77 +80,10 @@ tasks {
 		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
 	}
 }
-//
-//tasks.withType(GenerateSwaggerUI){
-//	dependsOn 'openapi3'
-//
-//	delete file('src/main/resources/static/docs')
-//	copy{
-//		from 'build/resources/main/static/docs'
-//		into 'src/main/resources/static/docs/'
-//	}
-//}
-
-//
-//task copyDocument(type: Copy){
-//	dependsOn asciidoctor
-//	from file('build/docs/asciidoc')
-//	into file('src/main/resources/static/docs')
-//}
 
 test {
 	useJUnitPlatform()
 }
 
-//bootJar{
-//	dependsOn('openapi3')
-//}
-//
-//openapi3{
-//	server = "http://localhost:8080"
-//	title = "Boilerplate DOCS"
-//	description = "Boilerplate REST API TEST DOCS"
-//	version = "0.0.1"
-//	outputFileNamePrefix = 'boilerplate-1.0.0'
-//	format = 'json'
-//	outputDirectory = 'build/resources/main/static/docs'
-//}
-//
-//asciidoctor {
-//	configurations 'asciidoctorExt'
-//	baseDirFollowsSourceFile()
-//	inputs.dir snippetsDir
-//	dependsOn test
-//}
-//
-//asciidoctor.doFirst{
-//	delete file('src/main/resources/static/docs')
-//}
-
-// 패키지 jar로 build
-//sourceSets {
-//	// 'util'이라는 이름의 새로운 소스 세트 생성
-//	util {
-//		java {
-//			srcDir 'src/main/java'
-//			include 'com/picpal/framework/common/utils/html/**'
-//		}
-//	}
-//}
-
-//
-//task utilJar(type: Jar) {
-//	// 생성될 JAR 파일의 이름 지정
-//	archiveFileName = 'util-common.jar'
-//	// 'util' 소스 세트의 컴파일된 클래스를 포함
-//	from sourceSets.util.output
-//	// JAR 메타데이터 구성 (필요한 경우)
-//	// manifest {
-//	//     attributes(
-//	//         'Implementation-Title': 'Utility Common Library',
-//	//         'Implementation-Version': version
-//	//     )
-//	// }
-//}
 
 
